@@ -1,6 +1,7 @@
 "use client";
 
 import { useFitnessData } from "@/hooks/useFitnessData";
+import { WorkoutTypeIcon } from "@/components/WorkoutTypeIcon";
 
 export default function HistoryPage() {
   const { workouts } = useFitnessData();
@@ -25,15 +26,18 @@ export default function HistoryPage() {
             {workouts.map((w) => (
               <li key={w.id} className="py-3 text-sm">
                 <div className="flex items-baseline justify-between gap-3">
-                  <div>
-                    <p className="font-medium text-slate-100">{w.type}</p>
-                    <p className="text-xs text-slate-500">
-                      {new Date(w.date).toLocaleDateString(undefined, {
-                        weekday: "short",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </p>
+                  <div className="flex items-center gap-2">
+                    <WorkoutTypeIcon type={w.type} />
+                    <div>
+                      <p className="font-medium text-slate-100">{w.type}</p>
+                      <p className="text-xs text-slate-500">
+                        {new Date(w.date).toLocaleDateString(undefined, {
+                          weekday: "short",
+                          month: "short",
+                          day: "numeric",
+                        })}
+                      </p>
+                    </div>
                   </div>
                   <div className="text-right text-slate-300">
                     <p className="font-medium">{w.durationMinutes} min</p>

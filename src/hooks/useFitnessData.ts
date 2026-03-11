@@ -67,6 +67,6 @@ export function useFitnessData(): UseFitnessData {
 const DEFAULT_FALLBACK_SETTINGS: Settings = {
   id: "default",
   unitDuration: "minutes",
-  workoutTypes: ["Run", "Lift", "Yoga", "Other"],
+  workoutTypes: ["Run", "Lift", "Yoga", "Muay Thai", "Tennis", "Hike", "Other"],
 };
 

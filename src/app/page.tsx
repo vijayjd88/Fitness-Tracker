@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useFitnessData } from "@/hooks/useFitnessData";
+import { WorkoutTypeIcon } from "@/components/WorkoutTypeIcon";
 
 export default function Home() {
   const { summary, workouts, settings, isReady } = useFitnessData();
@@ -69,7 +70,8 @@ export default function Home() {
             </p>
           ) : (
             <div className="space-y-1 text-sm text-slate-300">
-              <p>
+              <p className="flex items-center gap-2">
+                <WorkoutTypeIcon type={latest.type} />
                 <span className="font-medium">{latest.type}</span>{" "}
                 <span className="text-slate-400">
                   on{" "}

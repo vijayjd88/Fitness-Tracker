@@ -3,6 +3,7 @@
 import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFitnessData } from "@/hooks/useFitnessData";
+import { WorkoutTypeIcon } from "@/components/WorkoutTypeIcon";
 
 export default function LogPage() {
   const { settings, addWorkout } = useFitnessData();
@@ -14,10 +15,14 @@ export default function LogPage() {
   const [type, setType] = useState<string>(
     settings.workoutTypes[0] ?? "Run",
   );
+  const [otherWorkoutName, setOtherWorkoutName] = useState<string>("");
   const [duration, setDuration] = useState<string>("30");
   const [notes, setNotes] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+
+  const isOther = type.toLowerCase() === "other";
+  const displayType = isOther && otherWorkoutName.trim() ? otherWorkoutName.trim() : type;
 
   const handleSubmit = (event: FormEvent) => {
     event.preventDefault();
@@ -28,7 +33,11 @@ export default function LogPage() {
       setError("Please choose a date.");
       return;
     }
-    if (!type.trim()) {
+    if (isOther && !otherWorkoutName.trim()) {
+      setError("Please enter what kind of workout it is.");
+      return;
+    }
+    if (!displayType.trim()) {
       setError("Please choose a workout type.");
       return;
     }
@@ -41,7 +50,7 @@ export default function LogPage() {
     try {
       addWorkout({
         date,
-        type,
+        type: displayType,
         durationMinutes,
         notes: notes.trim() || undefined,
       });
@@ -79,18 +88,36 @@ export default function LogPage() {
           <label className="label" htmlFor="type">
             Workout type
           </label>
-          <select
-            id="type"
-            className="input"
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-          >
-            {settings.workoutTypes.map((t) => (
-              <option key={t} value={t}>
-                {t}
-              </option>
-            ))}
-          </select>
+          <div className="flex items-center gap-2">
+            <WorkoutTypeIcon type={displayType} />
+            <select
+              id="type"
+              className="input flex-1"
+              value={type}
+              onChange={(e) => setType(e.target.value)}
+            >
+              {settings.workoutTypes.map((t) => (
+                <option key={t} value={t}>
+                  {t}
+                </option>
+              ))}
+            </select>
+          </div>
+          {isOther && (
+            <div className="mt-2">
+              <label className="label" htmlFor="other-workout">
+                What kind of workout?
+              </label>
+              <input
+                id="other-workout"
+                type="text"
+                className="input"
+                placeholder="e.g. Muay Thai, Tennis, Swimming"
+                value={otherWorkoutName}
+                onChange={(e) => setOtherWorkoutName(e.target.value)}
+              />
+            </div>
+          )}
         </div>
 
         <div>
