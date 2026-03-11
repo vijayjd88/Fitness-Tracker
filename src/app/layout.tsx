@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Inter } from "next/font/google";
 import { MainWithBackground } from "@/components/MainWithBackground";
 import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "Fitness Tracker",
@@ -15,15 +18,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="bg-slate-950 text-slate-50 font-sans antialiased" style={{ fontFamily: "'Inter', sans-serif" }}>
+      <body className={`${inter.className} bg-slate-950 text-slate-50`}>
         <div className="min-h-screen flex flex-col">
           <header className="border-b border-slate-800 bg-slate-900/70 backdrop-blur">
             <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
