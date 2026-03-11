@@ -1,0 +1,17 @@
+{
+  "name": "VibeFit Fitness Tracker",
+  "short_name": "VibeFit",
+  "description": "Log workouts, track progress, and stay consistent.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#10b981",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon",
+      "purpose": "any"
+    }
+  ]
+}

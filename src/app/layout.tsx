@@ -7,8 +7,16 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Fitness Tracker",
+  title: "VibeFit Fitness Tracker",
   description: "Log workouts, track progress, and stay consistent.",
+  manifest: "/manifest.json",
+};
+
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: "#10b981",
 };
 
 export default function RootLayout({

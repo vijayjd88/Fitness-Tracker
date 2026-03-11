@@ -1,8 +1,10 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
-import { getRandomQuote } from "@/lib/quotes";
+import { useState, useEffect } from "react";
+import { RegisterSW } from "@/components/RegisterSW";
+import { ReminderEffect } from "@/components/ReminderEffect";
+import { getRandomQuote, MOTIVATIONAL_QUOTES } from "@/lib/quotes";
 
 const BACKGROUNDS = [
   "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80",
@@ -12,11 +14,17 @@ const BACKGROUNDS = [
 ];
 
 export function MainWithBackground({ children }: { children: React.ReactNode }) {
-  const [quote] = useState(() => getRandomQuote());
-  const [bg] = useState(() => BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)]);
+  const [quote, setQuote] = useState(() => MOTIVATIONAL_QUOTES[0]);
+  const [bg, setBg] = useState(() => BACKGROUNDS[0]);
+  useEffect(() => {
+    setQuote(getRandomQuote());
+    setBg(BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)]);
+  }, []);
 
   return (
     <div className="absolute inset-0 flex flex-col">
+      <RegisterSW />
+      <ReminderEffect />
       <div className="absolute inset-0 -z-10">
         <Image
           src={bg}
