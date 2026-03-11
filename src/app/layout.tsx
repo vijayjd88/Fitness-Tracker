@@ -48,6 +48,9 @@ export default function RootLayout({
                 <Link href="/history" className="text-slate-200 hover:text-emerald-400">
                   History
                 </Link>
+                <Link href="/resources" className="text-slate-200 hover:text-emerald-400">
+                  Resources
+                </Link>
                 <Link href="/settings" className="text-slate-200 hover:text-emerald-400">
                   Settings
                 </Link>

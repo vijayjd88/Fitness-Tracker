@@ -14,6 +14,7 @@ export default function SettingsPage() {
   const [reminderEnabled, setReminderEnabled] = useState(settings.reminderEnabled ?? false);
   const [reminderTime, setReminderTime] = useState(settings.reminderTime ?? "09:00");
   const [saved, setSaved] = useState(false);
+  const [goalSaved, setGoalSaved] = useState(false);
   const [importMessage, setImportMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -149,6 +150,9 @@ export default function SettingsPage() {
 
       <div className="card space-y-4">
         <h2 className="text-sm font-medium text-slate-200">Weekly goal & reminder</h2>
+        <p className="text-xs text-slate-400">
+          Turn reminders on, set a time, and click Save. When the browser asks, allow notifications. You’ll get a desktop notification at that time <strong>only if the app is open in a tab</strong> (e.g. in the background). One reminder per day when you’re below your goal.
+        </p>
         <div>
           <label className="label" htmlFor="goal">Workouts per week (goal)</label>
           <input
@@ -183,7 +187,7 @@ export default function SettingsPage() {
             />
           </div>
         )}
-        <div className="pt-2">
+        <div className="flex items-center gap-3 pt-2">
           <button
             type="button"
             className="btn-primary"
@@ -194,10 +198,15 @@ export default function SettingsPage() {
                 reminderEnabled,
                 reminderTime: reminderTime || "09:00",
               });
+              setGoalSaved(true);
+              setTimeout(() => setGoalSaved(false), 2000);
             }}
           >
             Save goal & reminder
           </button>
+          {goalSaved && (
+            <span className="text-sm text-emerald-400">Saved!</span>
+          )}
         </div>
       </div>
 

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useFitnessData } from "@/hooks/useFitnessData";
 import { WorkoutTypeIcon } from "@/components/WorkoutTypeIcon";
+import { getTopTypesFromSummary } from "@/lib/resources";
 
 export default function Home() {
   const { summary, workouts, settings, isReady } = useFitnessData();
@@ -12,6 +13,7 @@ export default function Home() {
     Object.entries(summary.byType).sort((a, b) => b[1] - a[1])[0]?.[0] ?? null;
   const weeklyGoal = settings.weeklyGoal ?? 0;
   const maxChart = Math.max(1, ...summary.workoutsPerWeekLast8);
+  const topTypesForYou = getTopTypesFromSummary(summary.byType, 2);
 
   return (
     <div className="flex w-full flex-col gap-6">
@@ -112,6 +114,20 @@ export default function Home() {
               View history
             </Link>
           </div>
+        </div>
+
+        <div className="card flex flex-col justify-between gap-3">
+          <div>
+            <h2 className="mb-1 text-sm font-medium text-slate-200">Videos & articles</h2>
+            <p className="text-sm text-slate-400">
+              {topTypesForYou.length > 0
+                ? `Curated resources for ${topTypesForYou.join(", ")} and more.`
+                : "Find videos and articles by workout type."}
+            </p>
+          </div>
+          <Link href="/resources" className="btn-secondary self-start">
+            Browse resources
+          </Link>
         </div>
 
         <div className="card">
