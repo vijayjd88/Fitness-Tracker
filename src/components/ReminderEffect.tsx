@@ -28,7 +28,7 @@ export function ReminderEffect() {
         return;
       }
       lastNotifiedDate.current = today;
-      new Notification("VibeFit reminder", {
+      new Notification("LiveFit reminder", {
         body: `You're at ${summary.totalThisWeek}/${goal} workouts this week. Log one?`,
       });
     };

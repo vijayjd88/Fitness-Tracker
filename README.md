@@ -1,4 +1,14 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+**LiveFit** — Train · Track · Thrive. A personal fitness tracker built with Next.js: log workouts, view history, streaks, goals, reminders, and curated resources.
+
+## Optional: Live YouTube videos on Resources
+
+To show **current, relevant** YouTube videos by workout type (instead of static links), set a YouTube Data API v3 key:
+
+1. [Create a key](https://console.cloud.google.com/apis/credentials) (enable YouTube Data API v3).
+2. In **Vercel**: Project → Settings → Environment Variables → add `YOUTUBE_API_KEY` with your key.
+3. Redeploy. The Resources page will fetch fresh search results per workout type.
+
+See `.env.example` for local development.
 
 ## Getting Started
 

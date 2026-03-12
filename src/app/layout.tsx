@@ -1,14 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Inter } from "next/font/google";
+import { Logo } from "@/components/Logo";
 import { MainWithBackground } from "@/components/MainWithBackground";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "VibeFit Fitness Tracker",
-  description: "Log workouts, track progress, and stay consistent.",
+  title: "LiveFit — Train · Track · Thrive",
+  description: "Log workouts, track progress, and stay consistent. Your fitness companion.",
   manifest: "/manifest.json",
 };
 
@@ -30,14 +31,7 @@ export default function RootLayout({
         <div className="min-h-screen flex flex-col">
           <header className="border-b border-slate-800 bg-slate-900/70 backdrop-blur">
             <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
-              <Link href="/" className="flex items-baseline gap-2">
-                <span className="text-lg font-semibold tracking-tight">
-                  VibeFit
-                </span>
-                <span className="text-xs uppercase tracking-wide text-slate-400">
-                  Fitness Tracker
-                </span>
-              </Link>
+              <Logo />
               <nav className="flex gap-4 text-sm">
                 <Link href="/" className="text-slate-200 hover:text-emerald-400">
                   Dashboard
@@ -62,7 +56,7 @@ export default function RootLayout({
           </main>
           <footer className="border-t border-slate-800 bg-slate-950/80">
             <div className="mx-auto max-w-5xl px-4 py-3 text-xs text-slate-500">
-              Built to kick off your fitness coding journey.
+              LiveFit — Train · Track · Thrive
             </div>
           </footer>
         </div>

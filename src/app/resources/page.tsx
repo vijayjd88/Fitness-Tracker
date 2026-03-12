@@ -1,163 +1,203 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import Image from "next/image";
 import { useFitnessData } from "@/hooks/useFitnessData";
 import {
-  VIDEOS_BY_TYPE,
   ARTICLES_BY_TYPE,
   GENERAL_ARTICLES,
   getVideoThumbUrl,
   getVideoWatchUrl,
   getTopTypesFromSummary,
+  type ArticleResource,
 } from "@/lib/resources";
+
+interface YouTubeVideo {
+  id: string;
+  title: string;
+  channelTitle?: string;
+}
+
+const WORKOUT_TYPES = ["Run", "Yoga", "Muay Thai", "Lift", "Tennis", "Hike"];
+
+function VideoCard({ v }: { v: YouTubeVideo }) {
+  return (
+    <a
+      href={getVideoWatchUrl(v.id)}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="min-w-0 rounded-xl overflow-hidden border border-slate-700 hover:border-emerald-500 hover:shadow-lg hover:shadow-emerald-500/10 transition-all block"
+    >
+      <div className="relative w-full aspect-video bg-slate-800">
+        <Image
+          src={getVideoThumbUrl(v.id)}
+          alt=""
+          fill
+          className="object-cover"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+        />
+      </div>
+      <p className="p-2 text-xs text-slate-300 line-clamp-2" title={v.title}>
+        {v.title}
+      </p>
+    </a>
+  );
+}
+
+function ArticlesList({ articles, title }: { articles: ArticleResource[]; title?: string }) {
+  if (!articles.length) return null;
+  return (
+    <div className="space-y-2">
+      {title && (
+        <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+          {title}
+        </h4>
+      )}
+      <ul className="space-y-2">
+        {articles.map((a) => (
+          <li key={a.url}>
+            <a
+              href={a.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm text-emerald-400 hover:text-emerald-300 hover:underline"
+            >
+              {a.title}
+            </a>
+            {a.description && (
+              <p className="text-xs text-slate-500 mt-0.5">{a.description}</p>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function VideosAndArticlesRow({
+  type,
+  videos,
+  articles,
+  loading,
+}: {
+  type: string;
+  videos: YouTubeVideo[];
+  articles: ArticleResource[];
+  loading?: boolean;
+}) {
+  return (
+    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr),280px] min-w-0">
+      <div className="min-w-0 overflow-hidden">
+        <h3 className="mb-2 text-sm font-medium text-slate-200">{type}</h3>
+        {loading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 min-w-0">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="aspect-video min-w-0 rounded-xl bg-slate-800 animate-pulse" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 min-w-0">
+            {videos.length ? videos.map((v) => <VideoCard key={v.id} v={v} />) : (
+              <p className="col-span-full text-xs text-slate-500 py-2">
+                No videos available for this type right now.
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+      <div className="lg:border-l lg:border-slate-700 lg:pl-6 min-w-0">
+        <ArticlesList articles={articles} title="Articles" />
+      </div>
+    </div>
+  );
+}
 
 export default function ResourcesPage() {
   const { summary } = useFitnessData();
   const topTypes = getTopTypesFromSummary(summary.byType, 2);
-  const allTypes = ["Run", "Yoga", "Muay Thai", "Lift", "Tennis", "Hike"];
+  const [videosByType, setVideosByType] = useState<Record<string, YouTubeVideo[]>>({});
+  const [loading, setLoading] = useState<Record<string, boolean>>({});
+
+  const fetchVideos = async (type: string) => {
+    setLoading((l) => ({ ...l, [type]: true }));
+    try {
+      const res = await fetch(`/api/videos?type=${encodeURIComponent(type)}&max=8`);
+      const data = (await res.json()) as { videos?: YouTubeVideo[] };
+      setVideosByType((v) => ({ ...v, [type]: data.videos ?? [] }));
+    } finally {
+      setLoading((l) => ({ ...l, [type]: false }));
+    }
+  };
+
+  useEffect(() => {
+    WORKOUT_TYPES.forEach(fetchVideos);
+  }, []);
 
   return (
-    <div className="w-full space-y-8">
+    <div className="w-full min-w-0 max-w-full space-y-8 overflow-x-hidden">
       <section>
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
           Resources & videos
         </h1>
         <p className="mt-1 text-sm text-slate-400">
-          Curated videos and articles by workout type. Recommendations below are based on what you log most.
+          Live YouTube results and trusted articles by workout type.
         </p>
       </section>
 
-      {topTypes.length > 0 && (
-        <section className="card">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr),320px] min-w-0">
+        <section className="card min-w-0">
           <h2 className="mb-3 text-sm font-medium text-emerald-400">
             Recommended for you
           </h2>
           <p className="mb-4 text-xs text-slate-400">
-            Based on your logged workouts: {topTypes.join(", ")}
+            {topTypes.length > 0
+              ? `Based on your logs: ${topTypes.join(", ")}`
+              : "Log workouts to see personalized picks."}
           </p>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {topTypes.map((type) => {
-              const videos = VIDEOS_BY_TYPE[type] ?? VIDEOS_BY_TYPE.Other;
-              const articles = ARTICLES_BY_TYPE[type] ?? ARTICLES_BY_TYPE.Other;
-              return (
-                <div key={type} className="space-y-3">
-                  <h3 className="text-sm font-medium text-slate-200">{type}</h3>
-                  <div className="flex gap-2 overflow-x-auto pb-2">
-                    {videos.slice(0, 3).map((v) => (
-                      <a
-                        key={v.id}
-                        href={getVideoWatchUrl(v.id)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="shrink-0 w-40 rounded-lg overflow-hidden border border-slate-700 hover:border-emerald-500 transition-colors"
-                      >
-                        <img
-                          src={getVideoThumbUrl(v.id)}
-                          alt=""
-                          className="w-full aspect-video object-cover"
-                        />
-                        <p className="p-2 text-xs text-slate-300 truncate" title={v.title}>
-                          {v.title}
-                        </p>
-                      </a>
-                    ))}
-                  </div>
-                  <ul className="text-xs space-y-1">
-                    {articles.slice(0, 2).map((a) => (
-                      <li key={a.url}>
-                        <a
-                          href={a.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-emerald-400 hover:underline"
-                        >
-                          {a.title}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      <section className="card">
-        <h2 className="mb-4 text-sm font-medium text-slate-200">
-          Videos by workout type
-        </h2>
-        <div className="space-y-6">
-          {allTypes.map((type) => {
-            const videos = VIDEOS_BY_TYPE[type] ?? VIDEOS_BY_TYPE.Other;
-            const articles = ARTICLES_BY_TYPE[type] ?? ARTICLES_BY_TYPE.Other;
-            return (
-              <div key={type}>
-                <h3 className="mb-2 text-sm font-medium text-slate-200">{type}</h3>
-                <div className="flex gap-3 overflow-x-auto pb-2">
-                  {videos.map((v) => (
-                    <a
-                      key={v.id}
-                      href={getVideoWatchUrl(v.id)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="shrink-0 w-44 rounded-lg overflow-hidden border border-slate-700 hover:border-emerald-500 transition-colors"
-                    >
-                      <img
-                        src={getVideoThumbUrl(v.id)}
-                        alt=""
-                        className="w-full aspect-video object-cover"
-                      />
-                      <p className="p-2 text-xs text-slate-300 truncate" title={v.title}>
-                        {v.title}
-                      </p>
-                    </a>
-                  ))}
-                </div>
-                <ul className="mt-2 text-xs text-slate-400 space-y-1">
-                  {articles.map((a) => (
-                    <li key={a.url}>
-                      <a
-                        href={a.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-emerald-400 hover:underline"
-                      >
-                        {a.title}
-                      </a>
-                      {a.description && ` — ${a.description}`}
-                    </li>
-                  ))}
-                </ul>
+          {topTypes.length > 0 ? (
+            topTypes.map((type) => (
+              <div key={type} className="mb-6 last:mb-0">
+                <VideosAndArticlesRow
+                  type={type}
+                  videos={videosByType[type] ?? []}
+                  articles={ARTICLES_BY_TYPE[type] ?? ARTICLES_BY_TYPE.Other ?? []}
+                  loading={loading[type]}
+                />
               </div>
-            );
-          })}
-        </div>
-      </section>
+            ))
+          ) : (
+            <p className="text-sm text-slate-500">Log some workouts to get recommendations.</p>
+          )}
+        </section>
 
-      <section className="card">
-        <h2 className="mb-3 text-sm font-medium text-slate-200">
-          Articles & tips
+        <section className="card lg:order-first min-w-0">
+          <h2 className="mb-3 text-sm font-medium text-slate-200">
+            Articles & tips
+          </h2>
+          <p className="mb-4 text-xs text-slate-400">
+            Trusted sources for motivation and basics.
+          </p>
+          <ArticlesList articles={GENERAL_ARTICLES} />
+        </section>
+      </div>
+
+      <section className="card min-w-0 overflow-hidden">
+        <h2 className="mb-4 text-sm font-medium text-slate-200">
+          Videos & articles by workout type
         </h2>
-        <p className="mb-4 text-xs text-slate-400">
-          General fitness and motivation from trusted sources.
-        </p>
-        <ul className="space-y-3">
-          {GENERAL_ARTICLES.map((a) => (
-            <li key={a.url}>
-              <a
-                href={a.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-emerald-400 hover:underline font-medium"
-              >
-                {a.title}
-              </a>
-              {a.description && (
-                <p className="mt-0.5 text-xs text-slate-400">{a.description}</p>
-              )}
-            </li>
+        <div className="space-y-8">
+          {WORKOUT_TYPES.filter(
+            (type) => loading[type] || (videosByType[type]?.length ?? 0) > 0
+          ).map((type) => (
+            <VideosAndArticlesRow
+              key={type}
+              type={type}
+              videos={videosByType[type] ?? []}
+              articles={ARTICLES_BY_TYPE[type] ?? []}
+              loading={loading[type]}
+            />
           ))}
-        </ul>
+        </div>
       </section>
 
       <section className="card border-dashed border-slate-600">
@@ -165,7 +205,7 @@ export default function ResourcesPage() {
           Community blog (coming soon)
         </h2>
         <p className="text-xs text-slate-500">
-          A shared blog for tips and stories from the VibeFit community is planned. For now, use the articles and videos above.
+          A shared blog for tips and stories from the LiveFit community is planned.
         </p>
       </section>
     </div>

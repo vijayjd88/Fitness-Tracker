@@ -1,8 +1,12 @@
 node_modules
 .next
+
+# Keep secrets out of the repo — never commit these
 .env
 .env.local
-.env.production
+.env.development.local
+.env.test.local
+.env.production.local
 .vercel
 dist
 npm-debug.log*

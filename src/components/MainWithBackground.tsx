@@ -1,25 +1,32 @@
 "use client";
 
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
 import { RegisterSW } from "@/components/RegisterSW";
 import { ReminderEffect } from "@/components/ReminderEffect";
 import { getRandomQuote, MOTIVATIONAL_QUOTES } from "@/lib/quotes";
 
-const BACKGROUNDS = [
-  "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80",
-  "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1920&q=80",
-  "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1920&q=80",
-  "https://images.unsplash.com/photo-1549060279-7e168fcee0c2?w=1920&q=80",
-];
+const BACKGROUNDS: Record<string, string> = {
+  "/": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80",
+  "/log": "https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=1920&q=80",
+  "/history": "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1920&q=80",
+  "/resources": "https://images.unsplash.com/photo-1549060279-7e168fcee0c2?w=1920&q=80",
+  "/settings": "https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=1920&q=80",
+};
+
+const DEFAULT_BG = BACKGROUNDS["/"];
 
 export function MainWithBackground({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
   const [quote, setQuote] = useState(() => MOTIVATIONAL_QUOTES[0]);
-  const [bg, setBg] = useState(() => BACKGROUNDS[0]);
+  const [bg, setBg] = useState(() => DEFAULT_BG);
   useEffect(() => {
     setQuote(getRandomQuote());
-    setBg(BACKGROUNDS[Math.floor(Math.random() * BACKGROUNDS.length)]);
   }, []);
+  useEffect(() => {
+    setBg(BACKGROUNDS[pathname ?? "/"] ?? DEFAULT_BG);
+  }, [pathname]);
 
   return (
     <div className="absolute inset-0 flex flex-col">
