@@ -1,10 +1,14 @@
 "use client";
 
 import { FormEvent, useState, useRef } from "react";
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import { useFitnessData } from "@/hooks/useFitnessData";
+import { clearGuest, isGuest } from "@/lib/guest";
 import type { Workout } from "@/lib/types";
 
 export default function SettingsPage() {
+  const router = useRouter();
   const { workouts, settings, updateSettings, replaceWorkouts } = useFitnessData();
   const [unitDuration, setUnitDuration] = useState(settings.unitDuration);
   const [workoutTypes, setWorkoutTypes] = useState(
@@ -247,6 +251,27 @@ export default function SettingsPage() {
         <p className="text-xs text-slate-400">
           Cloud sync with sign-in is planned. For now, use <strong>Export JSON</strong> on one device and <strong>Import JSON</strong> on another to move your data.
         </p>
+      </div>
+
+      <div className="card space-y-2">
+        <h2 className="text-sm font-medium text-slate-200">Account</h2>
+        <p className="text-xs text-slate-400">
+          Sign out to switch account or continue as guest on another device.
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            if (isGuest()) {
+              clearGuest();
+              router.replace("/welcome");
+            } else {
+              signOut({ callbackUrl: "/welcome" });
+            }
+          }}
+          className="btn-secondary border-slate-600 text-slate-300 hover:border-slate-500"
+        >
+          Sign out
+        </button>
       </div>
     </div>
   );

@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { useFitnessData } from "@/hooks/useFitnessData";
+import { useDisplayName } from "@/hooks/useDisplayName";
 import { WorkoutTypeIcon } from "@/components/WorkoutTypeIcon";
 import { getTopTypesFromSummary } from "@/lib/resources";
 
 export default function Home() {
+  const displayName = useDisplayName();
   const { summary, workouts, settings, isReady } = useFitnessData();
 
   const latest = workouts[0];
@@ -19,7 +21,7 @@ export default function Home() {
     <div className="flex w-full flex-col gap-6">
       <section>
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          Welcome back
+          Hello, {displayName}
         </h1>
         <p className="mt-1 text-sm text-slate-400">
           Log workouts, see your streaks, and keep your fitness journey on track.
