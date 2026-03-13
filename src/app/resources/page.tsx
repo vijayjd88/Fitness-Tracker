@@ -18,7 +18,7 @@ interface YouTubeVideo {
   channelTitle?: string;
 }
 
-const WORKOUT_TYPES = ["Run", "Yoga", "Muay Thai", "Lift", "Tennis", "Hike"];
+const WORKOUT_TYPES = ["Walk", "Run", "Yoga", "Muay Thai", "Lift", "Tennis", "Hike"];
 
 function VideoCard({ v }: { v: YouTubeVideo }) {
   return (
@@ -117,12 +117,14 @@ export default function ResourcesPage() {
   const topTypes = getTopTypesFromSummary(summary.byType, 2);
   const [videosByType, setVideosByType] = useState<Record<string, YouTubeVideo[]>>({});
   const [loading, setLoading] = useState<Record<string, boolean>>({});
+  const [apiKeyMissing, setApiKeyMissing] = useState(false);
 
   const fetchVideos = async (type: string) => {
     setLoading((l) => ({ ...l, [type]: true }));
     try {
       const res = await fetch(`/api/videos?type=${encodeURIComponent(type)}&max=8`);
-      const data = (await res.json()) as { videos?: YouTubeVideo[] };
+      const data = (await res.json()) as { videos?: YouTubeVideo[]; message?: string };
+      if (data.message === "YouTube API key not configured") setApiKeyMissing(true);
       setVideosByType((v) => ({ ...v, [type]: data.videos ?? [] }));
     } finally {
       setLoading((l) => ({ ...l, [type]: false }));
@@ -185,10 +187,13 @@ export default function ResourcesPage() {
         <h2 className="mb-4 text-sm font-medium text-slate-200">
           Videos & articles by workout type
         </h2>
+        {apiKeyMissing && (
+          <p className="mb-4 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-200 text-sm p-3">
+            Video recommendations need a YouTube API key. Add <code className="text-amber-100">YOUTUBE_API_KEY</code> in Vercel → Settings → Environment Variables, then redeploy.
+          </p>
+        )}
         <div className="space-y-8">
-          {WORKOUT_TYPES.filter(
-            (type) => loading[type] || (videosByType[type]?.length ?? 0) > 0
-          ).map((type) => (
+          {WORKOUT_TYPES.map((type) => (
             <VideosAndArticlesRow
               key={type}
               type={type}

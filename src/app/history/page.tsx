@@ -142,6 +142,11 @@ export default function HistoryPage() {
                             ? `${w.durationMinutes} min`
                             : `${(w.durationMinutes / 60).toFixed(1)} h`}
                         </p>
+                        {w.caloriesBurned != null && (
+                          <p className="mt-1 text-xs text-slate-500">
+                            {w.caloriesBurned} kcal
+                          </p>
+                        )}
                         {w.notes && (
                           <p className="mt-1 max-w-xs text-xs text-slate-400 truncate">
                             {w.notes}

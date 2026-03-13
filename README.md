@@ -10,6 +10,16 @@ To show **current, relevant** YouTube videos by workout type (instead of static 
 
 See `.env.example` for local development.
 
+## Sign in with Google (production)
+
+For "Sign in with Google" to work on Vercel:
+
+1. **Google Cloud Console** → your OAuth 2.0 Client (e.g. "LiveFit Web") → ensure **both**:
+   - **Authorised JavaScript origins** include `https://<your-app>.vercel.app` and `http://localhost:3005`.
+   - **Authorised redirect URIs** include `https://<your-app>.vercel.app/api/auth/callback/google` and `http://localhost:3005/api/auth/callback/google` (redirect URIs are different from origins; both are required).
+2. **Vercel** → Project → Settings → Environment Variables → set `AUTH_URL` to your main app URL, e.g. `https://fitness-tracker-xlzi.vercel.app` (Production). This makes the auth callback use a single URL so Google’s redirect URI matches.
+3. Redeploy after changing env vars.
+
 ## Getting Started
 
 First, run the development server:

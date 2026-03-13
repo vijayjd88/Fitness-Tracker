@@ -2,10 +2,10 @@
 
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useMemo } from "react";
 import { RegisterSW } from "@/components/RegisterSW";
 import { ReminderEffect } from "@/components/ReminderEffect";
-import { getRandomQuote, MOTIVATIONAL_QUOTES } from "@/lib/quotes";
+import { getQuoteForPath, MOTIVATIONAL_QUOTES } from "@/lib/quotes";
 
 const BACKGROUNDS: Record<string, string> = {
   "/": "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80",
@@ -19,14 +19,11 @@ const DEFAULT_BG = BACKGROUNDS["/"];
 
 export function MainWithBackground({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const [quote, setQuote] = useState(() => MOTIVATIONAL_QUOTES[0]);
-  const [bg, setBg] = useState(() => DEFAULT_BG);
-  useEffect(() => {
-    setQuote(getRandomQuote());
-  }, []);
-  useEffect(() => {
-    setBg(BACKGROUNDS[pathname ?? "/"] ?? DEFAULT_BG);
-  }, [pathname]);
+  const bg = BACKGROUNDS[pathname ?? "/"] ?? DEFAULT_BG;
+  const quote = useMemo(
+    () => getQuoteForPath(pathname ?? "/"),
+    [pathname],
+  );
 
   return (
     <div className="absolute inset-0 flex flex-col">
@@ -44,7 +41,7 @@ export function MainWithBackground({ children }: { children: React.ReactNode }) 
         <div className="absolute inset-0 bg-slate-950/85" aria-hidden />
       </div>
       <div className="relative z-0 flex flex-1 flex-col px-4 py-6">
-        <blockquote className="mb-6 rounded-xl border border-slate-700/80 bg-slate-900/70 px-4 py-3 text-sm italic text-slate-200 backdrop-blur sm:py-4 sm:text-base">
+        <blockquote className="mb-6 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-sm italic text-slate-100 shadow-xl shadow-black/20 backdrop-blur-xl sm:py-5 sm:text-base">
           &ldquo;{quote.text}&rdquo;
           <footer className="mt-2 not-italic text-slate-400">
             — {quote.author}

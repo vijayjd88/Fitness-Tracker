@@ -46,7 +46,10 @@ export async function GET(request: NextRequest) {
         publishedAt: i.snippet!.publishedAt ?? "",
       }));
 
-    return NextResponse.json({ videos });
+    const response = NextResponse.json({ videos });
+    // Cache for 1 hour so we don't hit YouTube quota on every Resources page load (6 types = 6 calls per visit)
+    response.headers.set("Cache-Control", "public, s-maxage=3600, stale-while-revalidate=86400");
+    return response;
   } catch (e) {
     console.error("YouTube fetch error:", e);
     return NextResponse.json({ videos: [] });

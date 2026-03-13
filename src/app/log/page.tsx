@@ -4,9 +4,10 @@ import { FormEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFitnessData } from "@/hooks/useFitnessData";
 import { WorkoutTypeIcon } from "@/components/WorkoutTypeIcon";
+import { caloriesBurnedForWorkout } from "@/lib/calories";
 
 export default function LogPage() {
-  const { settings, addWorkout } = useFitnessData();
+  const { settings, bodyProfile, addWorkout } = useFitnessData();
   const router = useRouter();
 
   const [date, setDate] = useState<string>(
@@ -18,6 +19,7 @@ export default function LogPage() {
   const [otherWorkoutName, setOtherWorkoutName] = useState<string>("");
   const [duration, setDuration] = useState<string>("30");
   const [notes, setNotes] = useState<string>("");
+  const [caloriesBurned, setCaloriesBurned] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
@@ -46,13 +48,24 @@ export default function LogPage() {
       return;
     }
 
+    const durationNum = Number(duration);
+    let calNum: number | undefined;
+    if (caloriesBurned.trim()) {
+      const c = Number(caloriesBurned);
+      if (Number.isFinite(c) && c >= 0) calNum = c;
+    }
+    if (calNum === undefined && bodyProfile.weightKg && durationNum > 0) {
+      calNum = caloriesBurnedForWorkout(displayType, durationNum, bodyProfile.weightKg);
+    }
+
     setSaving(true);
     try {
       addWorkout({
         date,
         type: displayType,
-        durationMinutes,
+        durationMinutes: durationNum,
         notes: notes.trim() || undefined,
+        caloriesBurned: calNum,
       });
       router.push("/history");
     } finally {
@@ -61,7 +74,7 @@ export default function LogPage() {
   };
 
   return (
-    <div className="w-full max-w-xl">
+    <div className="w-full max-w-2xl">
       <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
         Log a workout
       </h1>
@@ -132,6 +145,24 @@ export default function LogPage() {
             value={duration}
             onChange={(e) => setDuration(e.target.value)}
           />
+        </div>
+
+        <div>
+          <label className="label" htmlFor="calories">
+            Calories burned (optional)
+          </label>
+          <input
+            id="calories"
+            type="number"
+            min={0}
+            className="input"
+            placeholder={bodyProfile.weightKg ? "Auto from weight & duration" : "Leave blank or enter"}
+            value={caloriesBurned}
+            onChange={(e) => setCaloriesBurned(e.target.value)}
+          />
+          <p className="mt-1 text-xs text-slate-500">
+            Uses your weight from Settings → Body & weight when left blank. Height/weight/BMI are managed only there, not here.
+          </p>
         </div>
 
         <div>

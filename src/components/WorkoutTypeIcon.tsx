@@ -5,12 +5,14 @@ import {
   FaHiking,
   FaDumbbell,
   FaQuestionCircle,
+  FaWalking,
 } from "react-icons/fa";
 import { GiTennisRacket, GiMeditation, GiHighKick } from "react-icons/gi";
 
 const ICON_CLASS = "h-6 w-6 text-emerald-400 shrink-0";
 
 const TYPE_TO_ICON: Record<string, React.ReactNode> = {
+  walk: <FaWalking className={ICON_CLASS} />,
   run: <FaRunning className={ICON_CLASS} />,
   lift: <FaDumbbell className={ICON_CLASS} />,
   yoga: <GiMeditation className={ICON_CLASS} />,

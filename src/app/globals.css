@@ -2,46 +2,154 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Theme: default dark */
+:root,
+[data-theme="dark"] {
+  --page-bg: 2 6 23;
+  --page-text: 248 250 252;
+  --card-bg: 15 23 42;
+  --card-border: 51 65 85;
+  --header-bg: 15 23 42;
+  --header-border: 30 41 59;
+  --muted: 148 163 184;
+  --accent-400: 52 211 153;
+  --accent-500: 16 185 129;
+  --accent-600: 5 150 105;
+}
+
+[data-theme="light"] {
+  --page-bg: 248 250 252;
+  --page-text: 15 23 42;
+  --card-bg: 255 255 255;
+  --card-border: 226 232 240;
+  --header-bg: 255 255 255;
+  --header-border: 226 232 240;
+  --muted: 100 116 139;
+  --accent-400: 52 211 153;
+  --accent-500: 16 185 129;
+  --accent-600: 5 150 105;
+}
+
+[data-accent="blue"] {
+  --accent-400: 96 165 250;
+  --accent-500: 59 130 246;
+  --accent-600: 37 99 235;
+}
+
+[data-accent="violet"] {
+  --accent-400: 167 139 250;
+  --accent-500: 139 92 246;
+  --accent-600: 124 58 237;
+}
+
+[data-accent="amber"] {
+  --accent-400: 251 191 36;
+  --accent-500: 245 158 11;
+  --accent-600: 217 119 6;
+}
+
 @layer base {
   html {
     @apply antialiased;
+    padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   }
 
   body {
-    @apply bg-slate-950 text-slate-50;
+    background-color: rgb(var(--page-bg));
+    color: rgb(var(--page-text));
+    min-height: 100vh;
+    padding-bottom: env(safe-area-inset-bottom, 0);
   }
 }
 
 @layer components {
+  .bg-page {
+    background-color: rgb(var(--page-bg));
+  }
+
+  .text-page {
+    color: rgb(var(--page-text));
+  }
+
   .card {
-    @apply rounded-xl border border-slate-800 bg-slate-900/60 p-4 shadow-sm;
+    @apply rounded-xl border p-4 shadow-sm;
+    background-color: rgb(var(--card-bg) / 0.6);
+    border-color: rgb(var(--card-border) / 0.8);
   }
 
   .card-title {
-    @apply mb-1 text-sm font-medium text-slate-300;
+    @apply mb-1 text-sm font-medium;
+    color: rgb(var(--muted));
   }
 
   .card-value {
-    @apply text-2xl font-semibold text-emerald-400;
+    @apply text-2xl font-semibold;
+    color: rgb(var(--accent-500));
   }
 
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-lg bg-emerald-500 px-4 py-2 text-sm font-medium text-slate-950 shadow transition hover:bg-emerald-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950;
+    @apply inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg px-4 py-2 text-sm font-medium shadow transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+    background-color: rgb(var(--accent-500));
+    color: rgb(2 6 23);
+  }
+  .btn-primary:hover {
+    background-color: rgb(var(--accent-400));
+  }
+  .btn-primary:focus-visible {
+    @apply ring-offset-slate-950;
+  }
+  [data-theme="light"] .btn-primary:focus-visible {
+    @apply ring-offset-slate-100;
   }
 
   .btn-secondary {
-    @apply inline-flex items-center justify-center rounded-lg border border-slate-700 px-3 py-2 text-sm font-medium text-slate-200 shadow-sm transition hover:border-emerald-400 hover:text-emerald-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950;
+    @apply inline-flex min-h-[44px] min-w-[44px] items-center justify-center rounded-lg border px-3 py-2 text-sm font-medium shadow-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2;
+    border-color: rgb(var(--card-border));
+    color: rgb(var(--page-text));
+  }
+  .btn-secondary:hover {
+    border-color: rgb(var(--accent-500));
+    color: rgb(var(--accent-500));
   }
 
   .input {
-    @apply w-full rounded-lg border border-slate-700 bg-slate-900/80 px-3 py-2 text-sm text-slate-50 shadow-sm outline-none transition placeholder:text-slate-500 focus:border-emerald-400 focus:ring-1 focus:ring-emerald-400;
+    @apply w-full rounded-lg border px-3 py-2 text-sm shadow-sm outline-none transition placeholder:opacity-60 focus:ring-1;
+    background-color: rgb(var(--card-bg) / 0.8);
+    border-color: rgb(var(--card-border));
+    color: rgb(var(--page-text));
+  }
+  .input:focus {
+    border-color: rgb(var(--accent-500));
+    ring-color: rgb(var(--accent-500));
   }
 
   .label {
-    @apply mb-1 block text-xs font-medium uppercase tracking-wide text-slate-400;
+    @apply mb-1 block text-xs font-medium uppercase tracking-wide;
+    color: rgb(var(--muted));
   }
 
   .error-text {
     @apply mt-1 text-xs text-red-400;
+  }
+
+  .link-accent {
+    color: rgb(var(--accent-500));
+  }
+  .link-accent:hover {
+    color: rgb(var(--accent-400));
+  }
+
+  .text-accent {
+    color: rgb(var(--accent-500));
+  }
+
+  .progress-bar-bg {
+    @apply rounded-full;
+    background-color: rgb(var(--card-border) / 0.5);
+  }
+
+  .progress-bar-fill {
+    @apply rounded-full transition-all;
+    background-color: rgb(var(--accent-500));
   }
 }

@@ -1,12 +1,16 @@
-import { Settings, Workout, WorkoutSummary } from "@/lib/types";
+import { BodyProfile, Settings, WeightEntry, Workout, WorkoutSummary } from "@/lib/types";
 
 const WORKOUTS_KEY = "fitness-tracker.workouts";
 const SETTINGS_KEY = "fitness-tracker.settings";
+const BODY_PROFILE_KEY = "fitness-tracker.bodyProfile";
+const WEIGHT_HISTORY_KEY = "fitness-tracker.weightHistory";
 
 const DEFAULT_SETTINGS: Settings = {
   id: "default",
   unitDuration: "minutes",
-  workoutTypes: ["Run", "Lift", "Yoga", "Muay Thai", "Tennis", "Hike", "Other"],
+  workoutTypes: ["Walk", "Run", "Lift", "Yoga", "Muay Thai", "Tennis", "Hike", "Other"],
+  theme: "dark",
+  accent: "emerald",
 };
 
 function isBrowser() {
@@ -87,6 +91,29 @@ export function loadSettings(): Settings {
 
 export function saveSettings(settings: Settings) {
   saveToStorage(SETTINGS_KEY, settings);
+}
+
+export function loadBodyProfile(): BodyProfile {
+  return loadFromStorage<BodyProfile>(BODY_PROFILE_KEY, {});
+}
+
+export function saveBodyProfile(profile: BodyProfile) {
+  saveToStorage(BODY_PROFILE_KEY, profile);
+}
+
+export function loadWeightHistory(): WeightEntry[] {
+  const entries = loadFromStorage<WeightEntry[]>(WEIGHT_HISTORY_KEY, []);
+  return entries.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+}
+
+export function addWeightEntry(entry: WeightEntry) {
+  const current = loadWeightHistory();
+  const filtered = current.filter((e) => e.date !== entry.date);
+  const next = [entry, ...filtered].sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+  );
+  saveToStorage(WEIGHT_HISTORY_KEY, next);
+  return next;
 }
 
 function isSameWeek(date: Date, now: Date) {
